@@ -292,6 +292,12 @@ async def create_default_categories(user_id: str):
         )
         await db.categories.insert_one(category.model_dump())
 
+
+# Root endpoint
+@api_router.get("/")
+async def root():
+    return {"message": "FinanzasApp API - v2.0"}
+
 # Auth endpoints
 @api_router.post("/auth/register", response_model=Token)
 async def register(user_data: UserRegister, background_tasks: BackgroundTasks):
