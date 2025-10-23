@@ -25,7 +25,7 @@ const Layout = ({ children }) => {
   
   // Add admin panel if user is admin
   if (user?.role === 'admin') {
-    navItems.push({ path: '/admin', label: 'Admin', icon: LogOut });
+    navItems.push({ path: '/admin', label: 'Admin', icon: Shield });
   }
 
   return (
