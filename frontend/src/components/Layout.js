@@ -22,6 +22,11 @@ const Layout = ({ children }) => {
     { path: '/categories', label: 'Categorías', icon: Tag },
     { path: '/statistics', label: 'Estadísticas', icon: BarChart3 }
   ];
+  
+  // Add admin panel if user is admin
+  if (user?.role === 'admin') {
+    navItems.push({ path: '/admin', label: 'Admin', icon: LogOut });
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
