@@ -57,6 +57,8 @@ class User(BaseModel):
     email: EmailStr
     role: str = "user"  # user or admin
     email_verified: bool = False
+    is_active: bool = True
+    profile_image: Optional[str] = None
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class UserRegister(BaseModel):
