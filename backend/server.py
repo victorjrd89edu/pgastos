@@ -370,6 +370,13 @@ async def login(credentials: UserLogin):
             detail="Email not verified. Please check your email for verification link."
         )
     
+    # Check if account is active
+    if not user_doc.get("is_active", True):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account has been deactivated. Please contact administrator."
+        )
+    
     user = User(**{k: v for k, v in user_doc.items() if k != "password"})
     access_token = create_access_token({"user_id": user.id, "role": user.role})
     return Token(access_token=access_token, token_type="bearer", user=user)
