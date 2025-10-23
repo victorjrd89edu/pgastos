@@ -8,6 +8,7 @@ import Transactions from '@/pages/Transactions';
 import Categories from '@/pages/Categories';
 import Statistics from '@/pages/Statistics';
 import AdminPanel from '@/pages/AdminPanel';
+import Profile from '@/pages/Profile';
 import VerifyEmail from '@/pages/VerifyEmail';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
