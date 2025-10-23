@@ -150,17 +150,21 @@ async def send_email(to_email: str, subject: str, html_content: str):
         html_part = MIMEText(html_content, 'html')
         message.attach(html_part)
         
+        # For Hostinger SSL on port 465
         await aiosmtplib.send(
             message,
             hostname=SMTP_HOST,
             port=SMTP_PORT,
             username=SMTP_USER,
             password=SMTP_PASSWORD,
-            use_tls=True
+            use_tls=True,
+            start_tls=False,  # Don't use STARTTLS with port 465
+            timeout=30
         )
-        logging.info(f"Email sent to {to_email}")
+        logging.info(f"Email sent successfully to {to_email}")
     except Exception as e:
-        logging.error(f"Failed to send email: {str(e)}")
+        logging.error(f"Failed to send email to {to_email}: {str(e)}")
+        # Don't raise exception, just log it
 
 async def send_verification_email(email: str, token: str):
     verification_url = f"{FRONTEND_URL}/verify-email?token={token}"
