@@ -168,6 +168,18 @@ const AuthPage = () => {
               >
                 {isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
               </button>
+              
+              {isLogin && (
+                <>
+                  <div className="my-2 text-slate-400">•</div>
+                  <a
+                    href="/forgot-password"
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </>
+              )}
             </div>
           </div>
         </Card>
