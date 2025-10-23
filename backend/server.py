@@ -668,6 +668,71 @@ async def delete_user(user_id: str, current_user: User = Depends(get_admin_user)
     
     return {"message": "User deleted"}
 
+@api_router.post("/admin/change-password")
+async def admin_change_user_password(password_data: AdminPasswordChange, current_user: User = Depends(get_admin_user)):
+    user = await db.users.find_one({"id": password_data.user_id})
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    # Hash new password
+    hashed_password = pwd_context.hash(password_data.new_password)
+    await db.users.update_one(
+        {"id": password_data.user_id},
+        {"$set": {"password": hashed_password}}
+    )
+    
+    return {"message": "Password changed successfully"}
+
+@api_router.post("/admin/toggle-user-status/{user_id}")
+async def toggle_user_status(user_id: str, current_user: User = Depends(get_admin_user)):
+    if user_id == current_user.id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot deactivate your own account")
+    
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    new_status = not user.get("is_active", True)
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"is_active": new_status}}
+    )
+    
+    return {"message": f"User {'activated' if new_status else 'deactivated'} successfully", "is_active": new_status}
+
+# Profile endpoints
+@api_router.put("/profile")
+async def update_profile(profile_data: ProfileUpdate, current_user: User = Depends(get_current_user)):
+    update_fields = {}
+    
+    # Update username if provided
+    if profile_data.username:
+        update_fields["username"] = profile_data.username
+    
+    # Update profile image if provided
+    if profile_data.profile_image:
+        update_fields["profile_image"] = profile_data.profile_image
+    
+    # Update password if both current and new password are provided
+    if profile_data.current_password and profile_data.new_password:
+        user_doc = await db.users.find_one({"id": current_user.id})
+        if not pwd_context.verify(profile_data.current_password, user_doc["password"]):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
+        
+        update_fields["password"] = pwd_context.hash(profile_data.new_password)
+    
+    if update_fields:
+        await db.users.update_one({"id": current_user.id}, {"$set": update_fields})
+    
+    # Get updated user
+    updated_user = await db.users.find_one({"id": current_user.id}, {"_id": 0, "password": 0})
+    return User(**updated_user)
+
+@api_router.get("/profile", response_model=User)
+async def get_profile(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
 app.include_router(api_router)
 
 app.add_middleware(
