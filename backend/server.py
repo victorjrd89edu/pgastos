@@ -434,11 +434,22 @@ async def reset_password(reset_data: PasswordResetConfirm):
     if datetime.now(timezone.utc) > expires_at:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Reset token expired")
     
-    # Update password
+    # Update password and verify email automatically
     hashed_password = pwd_context.hash(reset_data.new_password)
     await db.users.update_one(
         {"id": user_doc["id"]},
-        {"$set": {"password": hashed_password}, "$unset": {"reset_token": "", "reset_token_expires": ""}}
+        {
+            "$set": {
+                "password": hashed_password,
+                "email_verified": True  # Auto-verify email when resetting password
+            }, 
+            "$unset": {
+                "reset_token": "", 
+                "reset_token_expires": "",
+                "verification_token": "",
+                "verification_token_expires": ""
+            }
+        }
     )
     
     return {"message": "Password reset successfully"}
