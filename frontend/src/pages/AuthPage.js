@@ -6,11 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Wallet, TrendingUp, PiggyBank } from 'lucide-react';
+import { Wallet, TrendingUp, PiggyBank, Eye, EyeOff } from 'lucide-react';
 
 const AuthPage = () => {
   const { login } = useContext(AuthContext);
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -31,7 +32,10 @@ const AuthPage = () => {
       const response = await axios.post(`${API}${endpoint}`, payload);
       
       if (!isLogin) {
-        toast.success('¡Cuenta creada! Por favor verifica tu email antes de iniciar sesión.');
+        toast.success('¡Cuenta creada! Revisa tu email para verificar tu cuenta.');
+        // Clear form
+        setFormData({ username: '', email: '', password: '' });
+        setIsLogin(true);
       } else {
         login(response.data.access_token, response.data.user);
         toast.success('¡Bienvenido!');
@@ -137,16 +141,25 @@ const AuthPage = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="password" data-testid="password-label">Contraseña</Label>
-                <Input
-                  id="password"
-                  data-testid="password-input"
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required
-                  className="border-slate-300"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    data-testid="password-input"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    required
+                    className="border-slate-300 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
               </div>
 
               <Button
