@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '@/App';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Receipt, Tag, BarChart3, LogOut, Wallet } from 'lucide-react';
+import { LayoutDashboard, Receipt, Tag, BarChart3, LogOut, Wallet, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Layout = ({ children }) => {
