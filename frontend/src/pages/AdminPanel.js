@@ -4,12 +4,12 @@ import axios from 'axios';
 import Layout from '@/components/Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Users, DollarSign, Wallet, TrendingUp, Edit, Trash2, Shield } from 'lucide-react';
+import { Users, DollarSign, Wallet, TrendingUp, Edit, Trash2, Shield, Key, Power, Eye, EyeOff } from 'lucide-react';
 
 const AdminPanel = () => {
   const { token } = useContext(AuthContext);
@@ -17,11 +17,17 @@ const AdminPanel = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
+  const [changingPassword, setChangingPassword] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     role: 'user'
+  });
+  const [passwordData, setPasswordData] = useState({
+    new_password: ''
   });
 
   useEffect(() => {
@@ -61,6 +67,41 @@ const AdminPanel = () => {
     }
   };
 
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (passwordData.new_password.length < 6) {
+      toast.error('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+    
+    try {
+      await axios.post(`${API}/admin/change-password`, {
+        user_id: changingPassword.id,
+        new_password: passwordData.new_password
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success('Contraseña cambiada exitosamente');
+      setIsPasswordDialogOpen(false);
+      setPasswordData({ new_password: '' });
+      setShowPassword(false);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error al cambiar contraseña');
+    }
+  };
+
+  const handleToggleStatus = async (userId) => {
+    try {
+      const response = await axios.post(`${API}/admin/toggle-user-status/${userId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(response.data.message);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Error al cambiar estado');
+    }
+  };
+
   const handleDeleteUser = async (userId) => {
     if (!window.confirm('¿Estás seguro de eliminar este usuario? Se eliminarán todos sus datos.')) return;
     
@@ -83,6 +124,13 @@ const AdminPanel = () => {
       role: user.role
     });
     setIsDialogOpen(true);
+  };
+
+  const openPasswordDialog = (user) => {
+    setChangingPassword(user);
+    setPasswordData({ new_password: '' });
+    setShowPassword(false);
+    setIsPasswordDialogOpen(true);
   };
 
   const formatCurrency = (amount) => {
@@ -180,8 +228,8 @@ const AdminPanel = () => {
                   <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Usuario</th>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Email</th>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Rol</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Estado</th>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Verificado</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">Fecha</th>
                   <th className="text-right py-3 px-4 text-sm font-semibold text-slate-700">Acciones</th>
                 </tr>
               </thead>
@@ -203,15 +251,21 @@ const AdminPanel = () => {
                     </td>
                     <td className="py-3 px-4">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        user.is_active 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-red-100 text-red-700'
+                      }`}>
+                        {user.is_active ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         user.email_verified 
                           ? 'bg-green-100 text-green-700' 
                           : 'bg-yellow-100 text-yellow-700'
                       }`}>
                         {user.email_verified ? 'Sí' : 'No'}
                       </span>
-                    </td>
-                    <td className="py-3 px-4 text-sm text-slate-600">
-                      {new Date(user.created_at).toLocaleDateString('es-MX')}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex justify-end gap-2">
@@ -220,14 +274,34 @@ const AdminPanel = () => {
                           variant="ghost"
                           onClick={() => openEditDialog(user)}
                           className="hover:bg-blue-100"
+                          title="Editar usuario"
                         >
                           <Edit className="w-4 h-4 text-blue-600" />
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
+                          onClick={() => openPasswordDialog(user)}
+                          className="hover:bg-purple-100"
+                          title="Cambiar contraseña"
+                        >
+                          <Key className="w-4 h-4 text-purple-600" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleToggleStatus(user.id)}
+                          className={user.is_active ? 'hover:bg-red-100' : 'hover:bg-green-100'}
+                          title={user.is_active ? 'Desactivar' : 'Activar'}
+                        >
+                          <Power className={`w-4 h-4 ${user.is_active ? 'text-red-600' : 'text-green-600'}`} />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
                           onClick={() => handleDeleteUser(user.id)}
                           className="hover:bg-red-100"
+                          title="Eliminar usuario"
                         >
                           <Trash2 className="w-4 h-4 text-red-600" />
                         </Button>
@@ -289,6 +363,46 @@ const AdminPanel = () => {
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
               >
                 Actualizar Usuario
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Change Password Dialog */}
+        <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Cambiar Contraseña de {changingPassword?.username}</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleChangePassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="new_password">Nueva Contraseña</Label>
+                <div className="relative">
+                  <Input
+                    id="new_password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={passwordData.new_password}
+                    onChange={(e) => setPasswordData({ new_password: e.target.value })}
+                    required
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500">Mínimo 6 caracteres</p>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              >
+                Cambiar Contraseña
               </Button>
             </form>
           </DialogContent>
