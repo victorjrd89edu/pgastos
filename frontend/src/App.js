@@ -67,10 +67,14 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={!token ? <AuthPage /> : <Navigate to="/dashboard" />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/" />} />
           <Route path="/transactions" element={token ? <Transactions /> : <Navigate to="/" />} />
           <Route path="/categories" element={token ? <Categories /> : <Navigate to="/" />} />
           <Route path="/statistics" element={token ? <Statistics /> : <Navigate to="/" />} />
+          <Route path="/admin" element={token && user?.role === 'admin' ? <AdminPanel /> : <Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
       <Toaster position="top-right" />
