@@ -29,10 +29,16 @@ const AuthPage = () => {
         : formData;
       
       const response = await axios.post(`${API}${endpoint}`, payload);
-      login(response.data.access_token, response.data.user);
-      toast.success(isLogin ? '¡Bienvenido!' : '¡Cuenta creada exitosamente!');
+      
+      if (!isLogin) {
+        toast.success('¡Cuenta creada! Por favor verifica tu email antes de iniciar sesión.');
+      } else {
+        login(response.data.access_token, response.data.user);
+        toast.success('¡Bienvenido!');
+      }
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Error en la autenticación');
+      const errorMessage = error.response?.data?.detail || 'Error en la autenticación';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
