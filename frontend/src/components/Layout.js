@@ -61,10 +61,25 @@ const Layout = ({ children }) => {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-slate-900">{user?.username}</p>
-                <p className="text-xs text-slate-600">{user?.email}</p>
-              </div>
+              <Link to="/profile">
+                <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
+                  {user?.profile_image ? (
+                    <img 
+                      src={user.profile_image} 
+                      alt="Profile" 
+                      className="w-10 h-10 rounded-full object-cover border-2 border-slate-200"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold">
+                      {user?.username?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="text-left hidden sm:block">
+                    <p className="text-sm font-medium text-slate-900">{user?.username}</p>
+                    <p className="text-xs text-slate-600">{user?.email}</p>
+                  </div>
+                </div>
+              </Link>
               <Button
                 onClick={handleLogout}
                 data-testid="logout-button"
