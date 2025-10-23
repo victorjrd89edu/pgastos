@@ -75,6 +75,7 @@ function App() {
           <Route path="/transactions" element={token ? <Transactions /> : <Navigate to="/" />} />
           <Route path="/categories" element={token ? <Categories /> : <Navigate to="/" />} />
           <Route path="/statistics" element={token ? <Statistics /> : <Navigate to="/" />} />
+          <Route path="/profile" element={token ? <Profile /> : <Navigate to="/" />} />
           <Route path="/admin" element={token && user?.role === 'admin' ? <AdminPanel /> : <Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
