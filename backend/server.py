@@ -134,6 +134,17 @@ class UserUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[EmailStr] = None
     role: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class AdminPasswordChange(BaseModel):
+    user_id: str
+    new_password: str
+
+class ProfileUpdate(BaseModel):
+    username: Optional[str] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+    profile_image: Optional[str] = None
 
 # Email helper functions
 async def send_email(to_email: str, subject: str, html_content: str):
