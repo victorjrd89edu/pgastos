@@ -42,7 +42,9 @@ SMTP_PORT = int(os.environ.get('SMTP_PORT', '465'))
 SMTP_USER = os.environ.get('SMTP_USER', '')
 SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
 SMTP_FROM_EMAIL = os.environ.get('SMTP_FROM_EMAIL', SMTP_USER)
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://mymoneymanager-1.preview.emergentagent.com')
+FRONTEND_URL = os.environ.get('FRONTEND_URL')
+if not FRONTEND_URL:
+    raise ValueError("FRONTEND_URL must be set in environment variables")
 SUPER_ADMIN_EMAIL = os.environ.get('SUPER_ADMIN_EMAIL', 'conecta@vjrodriguez.dev')
 
 # Security
