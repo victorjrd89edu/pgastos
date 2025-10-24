@@ -42,9 +42,10 @@ const Statistics = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStats(response.data);
+      // Force re-render after data loads
+      setTimeout(() => setLoading(false), 100);
     } catch (error) {
       toast.error('Error al cargar estadísticas');
-    } finally {
       setLoading(false);
     }
   };
