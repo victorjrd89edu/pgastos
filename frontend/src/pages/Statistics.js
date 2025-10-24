@@ -141,17 +141,15 @@ const Statistics = () => {
             {summaryData.length > 0 && (
               <Card className="p-6 bg-white/80 backdrop-blur-sm border-slate-200">
                 <h2 className="text-2xl font-bold text-slate-900 mb-6">Resumen General</h2>
-                <div style={{ width: '100%', height: 350 }}>
-                  <ResponsiveContainer>
-                    <BarChart data={summaryData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis dataKey="name" stroke="#64748b" style={{ fontSize: '14px' }} />
-                      <YAxis stroke="#64748b" style={{ fontSize: '14px' }} tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="value" radius={[8, 8, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={summaryData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="name" stroke="#64748b" style={{ fontSize: '14px' }} />
+                    <YAxis stroke="#64748b" style={{ fontSize: '14px' }} tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="value" radius={[8, 8, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </Card>
             )}
 
