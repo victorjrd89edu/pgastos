@@ -196,23 +196,21 @@ const Statistics = () => {
               <Card className="p-6 bg-white/80 backdrop-blur-sm border-slate-200">
                 <h2 className="text-2xl font-bold text-slate-900 mb-6">Gastos por Categoría</h2>
                 <div className="grid md:grid-cols-2 gap-8 items-center">
-                  <div style={{ width: '100%', height: 300 }}>
-                    <ResponsiveContainer>
-                      <PieChart>
-                        <Pie
-                          data={expenseCategories}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={renderCustomizedLabel}
-                          outerRadius={100}
-                          dataKey="value"
-                        />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend verticalAlign="bottom" height={36} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={expenseCategories}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={renderCustomizedLabel}
+                        outerRadius={100}
+                        dataKey="value"
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
+                  </ResponsiveContainer>
                   <div className="space-y-3">
                     {expenseCategories.map((category, index) => (
                       <div key={index} className="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-200">
