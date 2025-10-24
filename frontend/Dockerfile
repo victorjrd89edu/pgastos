@@ -16,6 +16,9 @@ ENV REACT_APP_BACKEND_URL=https://finanzas-app-backend.d2a2d0.easypanel.host
 # Copy source code
 COPY . .
 
+# Verify environment variable
+RUN echo "Building with REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL"
+
 # Build the app
 RUN yarn build
 
